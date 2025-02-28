@@ -1,6 +1,4 @@
-const {
-  convertTimestampToDate
-} = require("../db/seeds/utils");
+const { convertTimestampToDate, createLookup } = require("../db/seeds/utils");
 
 describe("convertTimestampToDate", () => {
   test("returns a new object", () => {
@@ -37,4 +35,27 @@ describe("convertTimestampToDate", () => {
     expect(result).toEqual(expected);
   });
 });
+describe("createLookup", () => {
+  test("returns a new obkect", () => {
+    const array = [
+      { id: 1, name: "topic" },
+      { id: 2, name: "slug" },
+      { id: 3, name: "coding" },
+    ];
+    const key = "slug";
+    const value = "topics";
+    const result = createLookup(array, key, value);
+    expect(result).not.toBe(array);
+    expect(result).toBeObject();
+  });
+  test("creates a lookup object from an array of objects", () => {
+    const array = [
+      { id: 1, name: "topic" },
+      { id: 2, name: "slug" },
+      { id: 3, name: "coding" },
+    ];
+    const expectedOutput = { topic: 1, slug: 2, coding: 3 };
 
+    expect(createLookup(array, "name", "id")).toEqual(expectedOutput);
+  });
+});
