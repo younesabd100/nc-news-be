@@ -88,7 +88,7 @@ function createArticles(articleData, topicLookup, authorLookup) {
   return db
     .query(
       `CREATE TABLE articles
-      (article_id SERIAL PRIMARY KEY,
+      (article_id SERIAL PRIMARY KEY NOT NULL,
       title VARCHAR(225) NOT NULL,
       topic VARCHAR(225) REFERENCES topics(slug) ON DELETE CASCADE,
       author VARCHAR(225) REFERENCES users(username) ON DELETE CASCADE,
@@ -116,12 +116,9 @@ function createArticles(articleData, topicLookup, authorLookup) {
         formattedArticles
       );
       return db.query(articleString).then(({ rows }) => {
-        const articleTitleLookup = createLookup(
-          rows,
-          "article_id",
-          "article_id"
-        );
-        return articleTitleLookup;
+        const articleLookup = createLookup(rows, "title", "article_id");
+        console.log(articleLookup);
+        return articleLookup;
       });
     });
 }
@@ -141,7 +138,7 @@ function createComments(commentData, articleLookup, authorLookup) {
       const formattedComments = commentData.map((comment) => {
         const formattedComment = convertTimestampToDate(comment);
         return [
-          articleLookup[formattedComment.article_id],
+          articleLookup[formattedComment.article_title],
           formattedComment.body,
           formattedComment.votes,
           authorLookup[formattedComment.author],
