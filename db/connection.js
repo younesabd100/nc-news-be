@@ -4,14 +4,7 @@ const ENV = process.env.NODE_ENV || "development";
 
 require("dotenv").config({ path: `${__dirname}/../.env.${ENV}` });
 
-const db = new Pool({
-  user: "younes",
-  host: "localhost",
-  database: "",
-  password: String("mysecretword123"), // Explicitly convert to string
-  port: 5432,
-});
-
+const db = new Pool();
 if (!process.env.PGDATABASE) {
   throw new Error("No PGDATABASE configured");
 } else {
