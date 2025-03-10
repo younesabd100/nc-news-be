@@ -117,7 +117,7 @@ function createArticles(articleData, topicLookup, authorLookup) {
       );
       return db.query(articleString).then(({ rows }) => {
         const articleLookup = createLookup(rows, "title", "article_id");
-        console.log(articleLookup);
+
         return articleLookup;
       });
     });
@@ -150,7 +150,7 @@ function createComments(commentData, articleLookup, authorLookup) {
         formattedComments
       );
       return db.query(commentsString).then(({ rows }) => {
-        console.log(rows);
+        return rows;
       });
     });
 }
