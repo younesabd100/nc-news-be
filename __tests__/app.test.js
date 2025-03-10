@@ -33,8 +33,9 @@ describe("GET /api/topics", () => {
       .get("/api/topics")
       .expect(200)
       .then(({ body }) => {
-        expect(body.length).toBeGreaterThan(0);
-        body.forEach((topic) => {
+        const { article } = body;
+        expect(article.length).toBeGreaterThan(0);
+        article.forEach((topic) => {
           expect(topic).toMatchObject({
             slug: expect.any(String),
             description: expect.any(String),
@@ -47,8 +48,45 @@ describe("GET /api/topics", () => {
       .get("/api/nonvalid")
       .expect(404)
       .then((body) => {
-        console.log(body);
         expect(body.notFound).toBe(true);
+      });
+  });
+});
+
+describe("GET /api/articles/:article_id", () => {
+  test("200: Responds with the appropriate article in the database", () => {
+    return request(app)
+      .get("/api/articles/6")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toHaveLength(1);
+        expect(body[0].article_id).toBe(6);
+        expect(body[0]).toMatchObject({
+          author: expect.any(String),
+          title: expect.any(String),
+          article_id: expect.any(Number),
+          body: expect.any(String),
+          topic: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          article_img_url: expect.any(String),
+        });
+      });
+  });
+  test("404: Responds with a not found message when queried an article_id that is not in the database", () => {
+    return request(app)
+      .get("/api/articles/600")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("article not found");
+      });
+  });
+  test("400: Responds with a bad request when queried an invalid character as article_id", () => {
+    return request(app)
+      .get("/api/articles/string")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
       });
   });
 });
