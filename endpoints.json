@@ -60,5 +60,21 @@
         }
       ]
     }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "should add a comment to the right article_id",
+    "queries": ["username", "comments", "sort_by", "order"],
+    "exampleResponse": {
+      "articles": [
+        {
+          "comment_id": 3,
+          "article_id": 1,
+          "body": "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+          "votes": 100,
+          "author": "icellusedkars",
+          "created_at": "2020-03-01T01:13:00.000Z"
+        }
+      ]
+    }
   }
 }

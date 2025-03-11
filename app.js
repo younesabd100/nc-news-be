@@ -6,11 +6,14 @@ const {
   getArticleById,
   getArticles,
   getCommentsByArticleId,
+  postCommentsByArticleId,
 } = require("./controller/controller.endpoint");
 const {
   handlePsqlError,
   handleServerError,
 } = require("./controller/errorHandler");
+
+app.use(express.json());
 
 app.get("/api", getApi);
 
@@ -21,6 +24,8 @@ app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles", getArticles);
 
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
+
+app.post("/api/articles/:article_id/comments", postCommentsByArticleId);
 
 app.use(handlePsqlError);
 app.use(handleServerError);

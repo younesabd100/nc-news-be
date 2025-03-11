@@ -127,7 +127,7 @@ describe("GET /api/articles", () => {
   });
 });
 describe("GET /api/articles/:article_id/comments", () => {
-  test("200: an array of comments for the given article_id of which each comment should have the following properties:", () => {
+  test("200: Respond with an array of comments for the given article_id of which each comment should have the following properties:", () => {
     return request(app)
       .get("/api/articles/1/comments")
       .expect(200)
@@ -141,7 +141,7 @@ describe("GET /api/articles/:article_id/comments", () => {
             created_at: expect.any(String),
             author: expect.any(String),
             body: expect.any(String),
-            article_id: expect.any(Number),
+            article_id: 1,
           });
         });
       });
@@ -165,15 +165,72 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/600/comments")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("no comments or incorect article_id");
+        expect(body.msg).toBe("article not found");
       });
   });
-  test("404: Responds when no comments exist from this user id", () => {
+  test("404: Responds with an error when queried an invalid article_id", () => {
+    return request(app)
+      .get("/api/articles/invalid/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test("200: Responds with an ampty array when no comments exist from this user id", () => {
     return request(app)
       .get("/api/articles/10/comments")
-      .expect(404)
+      .expect(200)
       .then(({ body }) => {
-        expect(body.msg).toBe("no comments or incorect article_id");
+        const { comments } = body;
+        expect(comments).toEqual([]);
+      });
+  });
+});
+describe("POST /api/articles/:article_id/comments", () => {
+  test("201: Responds with the posted comment", () => {
+    const newComment = {
+      username: "icellusedkars",
+      body: "not a fan of this article",
+    };
+    return request(app)
+      .post("/api/articles/10/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment).toMatchObject({
+          comment_id: 19,
+          votes: 0,
+          created_at: expect.any(String),
+          author: "icellusedkars",
+          body: "not a fan of this article",
+          article_id: 10,
+        });
+      });
+  });
+  test("400: Responds with an error if a field is missing", () => {
+    const newComment = {
+      username: "icellusedkars",
+    };
+    return request(app)
+      .post("/api/articles/10/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Missing info");
+      });
+  });
+  test("400: Responds with an error when correct field but incorrect value", () => {
+    const newComment = {
+      username: 4645,
+      body: "not a fan of this article",
+    };
+    return request(app)
+      .post("/api/articles/10/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid data type entered");
       });
   });
 });

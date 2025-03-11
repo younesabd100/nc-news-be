@@ -1,4 +1,8 @@
-const { convertTimestampToDate, createLookup } = require("../db/seeds/utils");
+const {
+  convertTimestampToDate,
+  createLookup,
+  checkArticleIdExist,
+} = require("../db/seeds/utils");
 
 describe("convertTimestampToDate", () => {
   test("returns a new object", () => {
@@ -57,5 +61,19 @@ describe("createLookup", () => {
     const expectedOutput = { topic: 1, slug: 2, coding: 3 };
 
     expect(createLookup(array, "name", "id")).toEqual(expectedOutput);
+  });
+});
+describe("checkArticleIdExist", () => {
+  test("function should resolves with true if an article_id exists", () => {
+    const article_id = 1;
+    checkArticleIdExist(article_id).then((res) => {
+      expect(res).toBe(true);
+    });
+  });
+  test("function should reject when an article_id does not  exists", () => {
+    const article_id = 1;
+    checkArticleIdExist(article_id).then((res) => {
+      expect(res.status).toBe(404);
+    });
   });
 });
