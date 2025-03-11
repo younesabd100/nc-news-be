@@ -126,3 +126,54 @@ describe("GET /api/articles", () => {
       });
   });
 });
+describe("GET /api/articles/:article_id/comments", () => {
+  test("200: an array of comments for the given article_id of which each comment should have the following properties:", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments.length).toBeGreaterThan(0);
+        comments.forEach((com) => {
+          expect(com).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            article_id: expect.any(Number),
+          });
+        });
+      });
+  });
+  test("200: Responds with an array of comments object, and should be sorted by date descending order", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+
+        expect(comments.length).toBeGreaterThan(0);
+        const dateSorted = [];
+        comments.map((art) => dateSorted.push(art.created_at));
+        expect(dateSorted).toBeSorted({ descending: true });
+      });
+  });
+
+  test("404: Responds with a not found message when queried an article_id that is not in the database", () => {
+    return request(app)
+      .get("/api/articles/600/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("no comments or incorect article_id");
+      });
+  });
+  test("404: Responds when no comments exist from this user id", () => {
+    return request(app)
+      .get("/api/articles/10/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("no comments or incorect article_id");
+      });
+  });
+});
