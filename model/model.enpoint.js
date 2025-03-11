@@ -54,13 +54,25 @@ exports.selectCommnentsByArticleid = (article_id) => {
       [article_id]
     )
     .then(({ rows }) => {
-      if (rows.length === 0) {
-        return Promise.reject({
-          status: 404,
-          msg: "no comments or incorect article_id",
-        });
-      }
-
       return rows;
+    });
+};
+exports.insertCommentsByArticleId = (article_id, username, body) => {
+  if (!username || !body) {
+    return Promise.reject({ status: 400, msg: "Missing info" });
+  }
+  if (typeof username !== "string" || typeof body !== "string") {
+    return Promise.reject({
+      status: 400,
+      msg: "Invalid data type entered",
+    });
+  }
+  return db
+    .query(
+      `INSERT INTO comments (article_id, author, body) VALUES($1,$2,$3) RETURNING*`,
+      [article_id, username, body]
+    )
+    .then(({ rows }) => {
+      return rows[0];
     });
 };

@@ -1,9 +1,11 @@
+const { checkArticleIdExist } = require("../db/seeds/utils.js");
 const endpoints = require("../endpoints.json");
 const {
   selectTopics,
   selectArticleById,
   selectArticles,
   selectCommnentsByArticleid,
+  insertCommentsByArticleId,
 } = require("../model/model.enpoint.js");
 
 exports.getApi = (req, res) => {
@@ -40,9 +42,24 @@ exports.getArticles = (req, res, next) => {
 
 exports.getCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
-  return selectCommnentsByArticleid(article_id)
-    .then((comments) => {
+  const promises = [selectCommnentsByArticleid(article_id)];
+  if (article_id) {
+    promises.push(checkArticleIdExist(article_id));
+  }
+  Promise.all(promises)
+    .then(([comments]) => {
       res.status(200).send({ comments });
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
+exports.postCommentsByArticleId = (req, res, next) => {
+  const { article_id } = req.params;
+  const { username, body } = req.body;
+  insertCommentsByArticleId(article_id, username, body)
+    .then((comment) => {
+      res.status(201).send({ comment });
     })
     .catch((error) => {
       next(error);
