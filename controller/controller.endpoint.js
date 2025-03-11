@@ -66,3 +66,18 @@ exports.postCommentsByArticleId = (req, res, next) => {
       next(error);
     });
 };
+exports.patchArticleByArticleId = (req, res, next) => {
+  const { article_id } = req.params;
+  const { inc_votes } = req.body;
+  const promises = [updateArticleByArticleId(article_id, inc_votes)];
+  if (article_id) {
+    promises.push(checkArticleIdExist(article_id));
+  }
+  Promise.all(promises)
+    .then(([article]) => {
+      res.status(200).send({ article });
+    })
+    .catch((error) => {
+      next(error);
+    });
+};

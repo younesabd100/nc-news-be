@@ -28,6 +28,8 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 app.post("/api/articles/:article_id/comments", postCommentsByArticleId);
 
+app.patch("/api/articles/:article_id", patchArticleByArticleId);
+
 app.use(handlePsqlError);
 app.use(handleServerError);
 
