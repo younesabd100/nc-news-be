@@ -1,4 +1,7 @@
-const { checkArticleIdExist } = require("../db/seeds/utils.js");
+const {
+  checkArticleIdExist,
+  checkCommentIdExist,
+} = require("../db/seeds/utils.js");
 const endpoints = require("../endpoints.json");
 const {
   selectTopics,
@@ -7,6 +10,7 @@ const {
   selectCommnentsByArticleid,
   insertCommentsByArticleId,
   updateArticleByArticleId,
+  removeCommentByCommentId,
 } = require("../model/model.enpoint.js");
 
 exports.getApi = (req, res) => {
@@ -76,6 +80,16 @@ exports.patchArticleByArticleId = (req, res, next) => {
   Promise.all(promises)
     .then(([article]) => {
       res.status(200).send({ article });
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
+exports.deleteCommentByCommentId = (req, res, next) => {
+  const { comment_id } = req.params;
+  removeCommentByCommentId(comment_id)
+    .then(() => {
+      res.status(204).send();
     })
     .catch((error) => {
       next(error);

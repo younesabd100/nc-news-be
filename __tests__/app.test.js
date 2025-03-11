@@ -274,7 +274,48 @@ describe("PATCH /api/articles/:article_id", () => {
       .send(newVote)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Invalid data type entered");
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test("400: Responds with an error when correct field but incorrect article_id", () => {
+    const newVote = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/articles/notanID")
+      .send(newVote)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+});
+describe("DELETE /api/comments/:comment_id", () => {
+  test("200:Responds by deleting the given comment by comment_id ", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then(() => {
+        return db
+          .query(`SELECT * FROM comments WHERE comment_id = 1`)
+          .then(({ rows }) => {
+            expect(rows).toHaveLength(0);
+          });
+      });
+  });
+
+  test("404: Responds with an error if comment does not exist ", () => {
+    return request(app)
+      .delete("/api/comments/999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Comment not found");
+      });
+  });
+  test("400: Responds with an error when comment_id have an incorrect value", () => {
+    return request(app)
+      .delete("/api/comments/notAvalue")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
       });
   });
 });
