@@ -6,6 +6,7 @@ const {
   selectArticles,
   selectCommnentsByArticleid,
   insertCommentsByArticleId,
+  updateArticleByArticleId,
 } = require("../model/model.enpoint.js");
 
 exports.getApi = (req, res) => {
@@ -60,6 +61,21 @@ exports.postCommentsByArticleId = (req, res, next) => {
   insertCommentsByArticleId(article_id, username, body)
     .then((comment) => {
       res.status(201).send({ comment });
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
+exports.patchArticleByArticleId = (req, res, next) => {
+  const { article_id } = req.params;
+  const { inc_votes } = req.body;
+  const promises = [updateArticleByArticleId(article_id, inc_votes)];
+  if (article_id) {
+    promises.push(checkArticleIdExist(article_id));
+  }
+  Promise.all(promises)
+    .then(([article]) => {
+      res.status(200).send({ article });
     })
     .catch((error) => {
       next(error);
