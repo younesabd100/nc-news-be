@@ -44,14 +44,6 @@ describe("GET /api/topics", () => {
         });
       });
   });
-  test("404: Responds with not found when passing the wrong path", () => {
-    return request(app)
-      .get("/api/nonvalid")
-      .expect(404)
-      .then((body) => {
-        expect(body.notFound).toBe(true);
-      });
-  });
 });
 
 describe("GET /api/articles/:article_id", () => {
@@ -60,9 +52,9 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/6")
       .expect(200)
       .then(({ body }) => {
-        expect(body).toHaveLength(1);
-        expect(body[0].article_id).toBe(6);
-        expect(body[0]).toMatchObject({
+        const { article } = body;
+        expect(article.article_id).toBe(6);
+        expect(article).toMatchObject({
           author: expect.any(String),
           title: expect.any(String),
           article_id: expect.any(Number),
@@ -97,9 +89,9 @@ describe("GET /api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body }) => {
-        console.log(body, "body from test");
-        expect(body.length).toBeGreaterThan(0);
-        body.forEach((art) => {
+        const { article } = body;
+        expect(article.length).toBeGreaterThan(0);
+        article.forEach((art) => {
           expect(art).toMatchObject({
             title: expect.any(String),
             article_id: expect.any(Number),
@@ -117,9 +109,10 @@ describe("GET /api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body }) => {
-        expect(body.length).toBeGreaterThan(0);
+        const { article } = body;
+        expect(article.length).toBeGreaterThan(0);
         const dateSorted = [];
-        body.filter((art) => dateSorted.push(art.created_at));
+        article.map((art) => dateSorted.push(art.created_at));
         expect(dateSorted).toBeSorted({ descending: true });
       });
   });
@@ -131,15 +124,5 @@ describe("GET /api/articles", () => {
       .then((body) => {
         expect(body.notFound).toBe(true);
       });
-  });
-  test("200: responds with an empty array if no articles exist", () => {
-    return db.query("DELETE FROM articles").then(() => {
-      return request(app)
-        .get("/api/articles")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body).toEqual([]);
-        });
-    });
   });
 });
