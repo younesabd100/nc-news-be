@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const format = require("pg-format");
 
 exports.selectTopics = () => {
   return db.query("SELECT slug, description FROM topics").then(({ rows }) => {
@@ -20,10 +21,13 @@ exports.selectArticleById = (article_id) => {
     });
 };
 
-exports.selectArticles = () => {
-  return db
-    .query(
-      `SELECT 
+exports.selectArticles = (sort_by = "created_at", order = "DESC") => {
+  const validOrders = ["ASC", "DESC"];
+  if (!validOrders.includes(order.toUpperCase())) {
+    order = "DESC";
+  }
+  const queryString = format(
+    `SELECT 
           articles.author,
           articles.title, 
           articles.article_id, 
@@ -41,11 +45,13 @@ GROUP BY articles.article_id,
           articles.created_at, 
           articles.votes, 
           articles.article_img_url
-ORDER BY articles.created_at DESC`
-    )
-    .then(({ rows }) => {
-      return rows;
-    });
+          ORDER BY %I %s`,
+    sort_by,
+    order
+  );
+  return db.query(queryString).then(({ rows }) => {
+    return rows;
+  });
 };
 exports.selectCommnentsByArticleid = (article_id) => {
   return db

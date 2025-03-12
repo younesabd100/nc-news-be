@@ -120,7 +120,7 @@ describe("GET /api/articles", () => {
         });
       });
   });
-  test("200: Responds with an array of article object, and should be sorted by date descending order", () => {
+  test("200: Responds with an array of article object, and should be sorted by default by  date descending order", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -130,6 +130,26 @@ describe("GET /api/articles", () => {
         const dateSorted = [];
         article.map((art) => dateSorted.push(art.created_at));
         expect(dateSorted).toBeSorted({ descending: true });
+      });
+  });
+  test("200: Responds with an array of article object, and should be able to accept sort and order by as query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=votes&order=DESC")
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article.length).toBeGreaterThan(0);
+        const voteSorted = [];
+        article.map((art) => voteSorted.push(art.votes));
+        expect(voteSorted).toBeSorted({ descending: true });
+      });
+  });
+  test("404: Responds with not found when sorting with wrong coloumn", () => {
+    return request(app)
+      .get("/api/articles?sort_by=fromage")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("column not found ");
       });
   });
 
@@ -358,7 +378,6 @@ describe("GET /api/users", () => {
       .get("/api/user")
       .expect(404)
       .then(({ body }) => {
-        console.log(body);
         expect(body.msg).toBe("Not Found");
       });
   });

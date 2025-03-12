@@ -2,7 +2,18 @@ const {
   convertTimestampToDate,
   createLookup,
   checkArticleIdExist,
+  checkColumnExist,
 } = require("../db/seeds/utils");
+const seed = require("../db/seeds/seed");
+const data = require("../db/data/test-data");
+const db = require("../db/connection");
+
+beforeEach(() => {
+  return seed(data);
+});
+afterAll(() => {
+  return db.end();
+});
 
 describe("convertTimestampToDate", () => {
   test("returns a new object", () => {
@@ -67,27 +78,29 @@ describe("checkArticleIdExist", () => {
   test("function should resolves with true if an article_id exists", () => {
     const article_id = 1;
     checkArticleIdExist(article_id).then((res) => {
-      expect(res).toBe(true);
+      expect(res.article_id).toBe(article_id);
     });
   });
   test("function should reject when an article_id does not  exists", () => {
-    const article_id = 1;
-    checkArticleIdExist(article_id).then((res) => {
-      expect(res.status).toBe(404);
+    const article_id = 9090;
+    checkArticleIdExist(article_id).catch((err) => {
+      expect(err.status).toBe(404);
     });
   });
 });
-// describe("checkCommentIdExist", () => {
-//   test("function should resolves with true if an comment_id exists", () => {
-//     const comment_id = 1;
-//     checkCommentIdExist(comment_id).then((res) => {
-//       expect(res).toBe(true);
-//     });
-//   });
-//   test("function should reject when an comment_id does not  exists", () => {
-//     const comment_id = 999;
-//     checkCommentIdExist(comment_id).then((res) => {
-//       expect(res.status).toBe(404);
-//     });
-//   });
-// });
+describe("checkColumnExist", () => {
+  test("function should resolves with true if an column exists", () => {
+    const column = "author";
+    const table = "articles";
+    checkColumnExist(column, table).then(() => {
+      expect(true).toBe(true);
+    });
+  });
+  test("function should reject when an article_id does not  exists", () => {
+    const column = "fromage";
+    const table = "articles";
+    checkColumnExist(column, table).catch((err) => {
+      expect(err.status).toBe(404);
+    });
+  });
+});
