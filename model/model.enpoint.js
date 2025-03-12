@@ -21,13 +21,12 @@ exports.selectArticleById = (article_id) => {
     });
 };
 
-exports.selectArticles = (sort_by = "created_at", order = "DESC") => {
+exports.selectArticles = (sort_by = "created_at", order = "DESC", topic) => {
   const validOrders = ["ASC", "DESC"];
   if (!validOrders.includes(order.toUpperCase())) {
     order = "DESC";
   }
-  const queryString = format(
-    `SELECT 
+  let queryString = `SELECT 
           articles.author,
           articles.title, 
           articles.article_id, 
@@ -45,13 +44,38 @@ GROUP BY articles.article_id,
           articles.created_at, 
           articles.votes, 
           articles.article_img_url
-          ORDER BY %I %s`,
-    sort_by,
-    order
-  );
-  return db.query(queryString).then(({ rows }) => {
-    return rows;
-  });
+          ORDER BY %I %s`;
+  if (topic) {
+    queryString = `SELECT 
+          articles.author,
+          articles.title, 
+          articles.article_id, 
+          articles.topic, 
+          articles.created_at, 
+          articles.votes, 
+          articles.article_img_url,  
+          COUNT(comments.comment_id) AS comment_count
+FROM articles
+LEFT JOIN comments ON articles.article_id = comments.article_id
+WHERE topic = $1
+GROUP BY articles.article_id, 
+          articles.author,
+          articles.title, 
+          articles.topic, 
+          articles.created_at, 
+          articles.votes, 
+          articles.article_img_url
+          ORDER BY %I %s`;
+    const queryFormat = format(queryString, sort_by, order);
+    return db.query(queryFormat, [topic]).then(({ rows }) => {
+      return rows;
+    });
+  } else {
+    const queryFormat = format(queryString, sort_by, order);
+    return db.query(queryFormat).then(({ rows }) => {
+      return rows;
+    });
+  }
 };
 exports.selectCommnentsByArticleid = (article_id) => {
   return db

@@ -9,7 +9,7 @@ exports.handlePsqlError = (error, request, response, next) => {
     response.status(400).send({ msg: "bad request" });
   }
   if (error.code === "42703") {
-    response.status(404).send({ msg: "column not found " });
+    response.status(400).send({ msg: "column not found " });
   }
   next(error);
 };
