@@ -10,6 +10,7 @@ exports.handlePsqlError = (error, request, response, next) => {
   }
   next(error);
 };
-exports.handleServerError = (error, request, response, next) => {
-  response.status(error.status).send({ msg: error.msg });
-};
+// exports.handleServerError = (error, request, response, next) => {
+//   console.log(error);
+//   response.status(error.status).send({ msg: error.msg });
+// };

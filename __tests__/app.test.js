@@ -44,6 +44,14 @@ describe("GET /api/topics", () => {
         });
       });
   });
+  test("404: Responds with not found when passing the wrong path", () => {
+    return request(app)
+      .get("/api/nonvalid")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not Found");
+      });
+  });
 });
 
 describe("GET /api/articles/:article_id", () => {
@@ -80,6 +88,14 @@ describe("GET /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("bad request");
+      });
+  });
+  test("404: Responds with not found when passing the wrong path", () => {
+    return request(app)
+      .get("/api/nonvalid")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not Found");
       });
   });
 });
@@ -121,8 +137,8 @@ describe("GET /api/articles", () => {
     return request(app)
       .get("/api/nonvalid")
       .expect(404)
-      .then((body) => {
-        expect(body.notFound).toBe(true);
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not Found");
       });
   });
 });
@@ -176,7 +192,7 @@ describe("GET /api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("bad request");
       });
   });
-  test("200: Responds with an ampty array when no comments exist from this user id", () => {
+  test("200: Responds with an empty array when no comments exist from this user id", () => {
     return request(app)
       .get("/api/articles/10/comments")
       .expect(200)
@@ -316,6 +332,34 @@ describe("DELETE /api/comments/:comment_id", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("bad request");
+      });
+  });
+});
+describe("GET /api/users", () => {
+  test("200: Responds with an array of user object, and should have the right property", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        const { user } = body;
+        expect(user).toHaveLength(4);
+        user.forEach((user) => {
+          expect(user).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
+          });
+        });
+      });
+  });
+
+  test("404: Responds with not found when passing the wrong path", () => {
+    return request(app)
+      .get("/api/user")
+      .expect(404)
+      .then(({ body }) => {
+        console.log(body);
+        expect(body.msg).toBe("Not Found");
       });
   });
 });
