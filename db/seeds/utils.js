@@ -1,4 +1,5 @@
 const db = require("../../db/connection");
+const format = require("pg-format");
 
 exports.convertTimestampToDate = ({ created_at, ...otherProperties }) => {
   if (!created_at) return { ...otherProperties };
@@ -21,16 +22,15 @@ exports.checkArticleIdExist = (article_id) => {
       if (rows.length === 0) {
         return Promise.reject({ status: 404, msg: "article not found" });
       }
+      return rows[0];
     });
 };
-// exports.checkCommentIdExist = (comment_id) => {
-//   return db
-//     .query(`SELECT * FROM comments WHERE comment_id =$1 RETURNING *`, [
-//       comment_id,
-//     ])
-//     .then(({ rows }) => {
-//       if (rows.length === 0) {
-//         return Promise.reject({ status: 404, msg: "comment not found" });
-//       }
-//     });
-// };
+exports.checkColumnExist = (column, table) => {
+  const queryString = format(`SELECT %I FROM %I LIMIT 1`, column, table);
+  return db.query(queryString).then((rows) => {
+    if (rows.length === 0) {
+      return Promise.reject({ status: 404, msg: "column not found " });
+    }
+    return rows[0];
+  });
+};

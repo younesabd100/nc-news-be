@@ -13,7 +13,7 @@ const {
 } = require("./controller/controller.endpoint");
 const {
   handlePsqlError,
-  // handleServerError,
+  handleServerError,
   handleCustomErrors,
 } = require("./controller/errorHandler");
 
@@ -43,6 +43,6 @@ app.all("*", (req, res) => {
 
 app.use(handleCustomErrors);
 app.use(handlePsqlError);
-// app.use(handleServerError);
+app.use(handleServerError);
 
 module.exports = app;
