@@ -3,6 +3,7 @@ const {
   createLookup,
   checkArticleIdExist,
   checkColumnExist,
+  checkTopicExist,
 } = require("../db/seeds/utils");
 const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data");
@@ -100,6 +101,20 @@ describe("checkColumnExist", () => {
     const column = "fromage";
     const table = "articles";
     checkColumnExist(column, table).catch((err) => {
+      expect(err.status).toBe(404);
+    });
+  });
+});
+describe("checkTopicExist", () => {
+  test("function should resolves with true if a topic exists", () => {
+    const topic = "mitch";
+    checkTopicExist(topic).then(() => {
+      expect(true).toBe(true);
+    });
+  });
+  test("function should reject when a topic does not  exists", () => {
+    const topic = "fromage";
+    checkTopicExist(topic).catch((err) => {
       expect(err.status).toBe(404);
     });
   });

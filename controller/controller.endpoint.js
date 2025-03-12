@@ -1,6 +1,7 @@
 const {
   checkArticleIdExist,
   checkColumnExist,
+  checkTopicExist,
 } = require("../db/seeds/utils.js");
 const endpoints = require("../endpoints.json");
 const {
@@ -37,11 +38,14 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  const { sort_by, order } = req.query;
-  const promises = [selectArticles(sort_by, order)];
+  const { sort_by, order, topic } = req.query;
+  const promises = [selectArticles(sort_by, order, topic)];
 
   if (sort_by && order) {
     promises.push(checkColumnExist(sort_by, "articles"));
+  }
+  if (topic) {
+    promises.push(checkTopicExist(topic));
   }
   Promise.all(promises)
     .then(([article]) => {
