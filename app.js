@@ -9,10 +9,12 @@ const {
   postCommentsByArticleId,
   patchArticleByArticleId,
   deleteCommentByCommentId,
+  getUsers,
 } = require("./controller/controller.endpoint");
 const {
   handlePsqlError,
-  handleServerError,
+  // handleServerError,
+  handleCustomErrors,
 } = require("./controller/errorHandler");
 
 app.use(express.json());
@@ -33,7 +35,14 @@ app.patch("/api/articles/:article_id", patchArticleByArticleId);
 
 app.delete("/api/comments/:comment_id", deleteCommentByCommentId);
 
+app.get("/api/users", getUsers);
+
+app.all("*", (req, res) => {
+  res.status(404).send({ msg: "Not Found" });
+});
+
+app.use(handleCustomErrors);
 app.use(handlePsqlError);
-app.use(handleServerError);
+// app.use(handleServerError);
 
 module.exports = app;

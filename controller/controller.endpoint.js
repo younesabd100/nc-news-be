@@ -11,6 +11,7 @@ const {
   insertCommentsByArticleId,
   updateArticleByArticleId,
   removeCommentByCommentId,
+  selectUsers,
 } = require("../model/model.enpoint.js");
 
 exports.getApi = (req, res) => {
@@ -90,6 +91,15 @@ exports.deleteCommentByCommentId = (req, res, next) => {
   removeCommentByCommentId(comment_id)
     .then(() => {
       res.status(204).send();
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
+exports.getUsers = (req, res, next) => {
+  return selectUsers()
+    .then((user) => {
+      res.status(200).send({ user });
     })
     .catch((error) => {
       next(error);
