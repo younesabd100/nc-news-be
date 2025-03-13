@@ -7,18 +7,42 @@ exports.selectTopics = () => {
   });
 };
 
-exports.selectArticleById = (article_id) => {
-  return db
-    .query(`SELECT * FROM articles WHERE article_id = $1`, [article_id])
-    .then(({ rows }) => {
-      if (rows.length === 0) {
-        return Promise.reject({
-          status: 404,
-          msg: "article not found",
-        });
-      }
-      return rows[0];
-    });
+exports.selectArticleById = (article_id, comment_count) => {
+  let queryString = `
+    SELECT 
+      articles.article_id,
+      articles.title,
+      articles.body,
+      articles.votes,
+      articles.topic,
+      articles.author,
+      articles.created_at,
+      articles.article_img_url
+  `;
+
+  if (comment_count) {
+    queryString += `, COUNT(comments.comment_id) AS comment_count `;
+  }
+
+  queryString += `
+    FROM articles
+    LEFT JOIN comments ON articles.article_id = comments.article_id
+    WHERE articles.article_id = $1
+  `;
+
+  if (comment_count) {
+    queryString += `GROUP BY articles.article_id`;
+  }
+
+  return db.query(queryString, [article_id]).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({
+        status: 404,
+        msg: "article not found",
+      });
+    }
+    return rows[0];
+  });
 };
 
 exports.selectArticles = (sort_by = "created_at", order = "DESC", topic) => {

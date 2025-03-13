@@ -98,6 +98,36 @@ describe("GET /api/articles/:article_id", () => {
         expect(body.msg).toBe("Not Found");
       });
   });
+  describe("GET /api/articles/:article_id?comment_count", () => {
+    test("200: Responds with an object with the comment_count for the appropriate article_id in the database", () => {
+      return request(app)
+        .get("/api/articles/9?comment_count=true")
+        .expect(200)
+        .then(({ body }) => {
+          const { article } = body;
+          expect(article.comment_count).toBe("2");
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            body: expect.any(String),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+          });
+        });
+    });
+    test("200: Responds with 0 when article_id exist but the comment count is 0 ", () => {
+      return request(app)
+        .get("/api/articles/4?comment_count=true")
+        .expect(200)
+        .then(({ body }) => {
+          const { article } = body;
+          expect(article.comment_count).toBe("0");
+        });
+    });
+  });
 });
 describe("GET /api/articles", () => {
   test("200: Responds with an array of article object, and should have the right property", () => {
