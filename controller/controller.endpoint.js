@@ -27,8 +27,9 @@ exports.getTopics = (req, res) => {
 
 exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
+  const { comment_count } = req.query;
 
-  return selectArticleById(article_id)
+  return selectArticleById(article_id, comment_count)
     .then((article) => {
       res.status(200).send({ article });
     })
