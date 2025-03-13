@@ -101,11 +101,11 @@ describe("GET /api/articles/:article_id", () => {
   describe("GET /api/articles/:article_id?comment_count", () => {
     test("200: Responds with an object with the comment_count for the appropriate article_id in the database", () => {
       return request(app)
-        .get("/api/articles/9?comment_count=true")
+        .get("/api/articles/9")
         .expect(200)
         .then(({ body }) => {
           const { article } = body;
-          expect(article.comment_count).toBe("2");
+          expect(article.comment_count).toBe(2);
           expect(article).toMatchObject({
             author: expect.any(String),
             title: expect.any(String),
@@ -120,11 +120,11 @@ describe("GET /api/articles/:article_id", () => {
     });
     test("200: Responds with 0 when article_id exist but the comment count is 0 ", () => {
       return request(app)
-        .get("/api/articles/4?comment_count=true")
+        .get("/api/articles/4")
         .expect(200)
         .then(({ body }) => {
           const { article } = body;
-          expect(article.comment_count).toBe("0");
+          expect(article.comment_count).toBe(0);
         });
     });
   });
@@ -159,6 +159,16 @@ describe("GET /api/articles", () => {
           const { article } = body;
           expect(article.length).toBeGreaterThan(0);
           expect(article).toBeSortedBy("created_at", { descending: true });
+        });
+    });
+    test("200: Responds with an array of article object, and should be able to accept sort and DESC by default if not precised ", () => {
+      return request(app)
+        .get("/api/articles?sort_by=votes")
+        .expect(200)
+        .then(({ body }) => {
+          const { article } = body;
+          expect(article.length).toBeGreaterThan(0);
+          expect(article).toBeSortedBy("votes", { descending: true });
         });
     });
     test("200: Responds with an array of article object, and should be able to accept sort and order by as query", () => {
