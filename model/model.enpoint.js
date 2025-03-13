@@ -7,9 +7,8 @@ exports.selectTopics = () => {
   });
 };
 
-exports.selectArticleById = (article_id, comment_count) => {
-  let queryString = `
-    SELECT 
+exports.selectArticleById = (article_id) => {
+  let queryString = `SELECT 
       articles.article_id,
       articles.title,
       articles.body,
@@ -17,22 +16,12 @@ exports.selectArticleById = (article_id, comment_count) => {
       articles.topic,
       articles.author,
       articles.created_at,
-      articles.article_img_url
-  `;
-
-  if (comment_count) {
-    queryString += `, COUNT(comments.comment_id) AS comment_count `;
-  }
-
-  queryString += `
+      articles.article_img_url,
+  CAST(COUNT(comments.comment_id) AS INTEGER) AS comment_count
     FROM articles
     LEFT JOIN comments ON articles.article_id = comments.article_id
     WHERE articles.article_id = $1
-  `;
-
-  if (comment_count) {
-    queryString += `GROUP BY articles.article_id`;
-  }
+  GROUP BY articles.article_id`;
 
   return db.query(queryString, [article_id]).then(({ rows }) => {
     if (rows.length === 0) {
@@ -44,7 +33,6 @@ exports.selectArticleById = (article_id, comment_count) => {
     return rows[0];
   });
 };
-
 exports.selectArticles = (sort_by = "created_at", order = "DESC", topic) => {
   const validOrders = ["ASC", "DESC"];
   if (!validOrders.includes(order.toUpperCase())) {
@@ -78,7 +66,7 @@ GROUP BY articles.article_id,
           articles.created_at, 
           articles.votes, 
           articles.article_img_url,  
-          COUNT(comments.comment_id) AS comment_count
+          CAST(COUNT(comments.comment_id) AS INTEGER) AS comment_count
 FROM articles
 LEFT JOIN comments ON articles.article_id = comments.article_id
 WHERE topic = $1

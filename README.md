@@ -1,38 +1,54 @@
-# NC News Seeding
+# **nc-news-be API**
 
-# Environment Variables Setup
+This is a RESTful API built with Node.js and Express that serves data from a PostgreSQL database. The API allows users to retrieve, create, update, and delete articles, comments, topics, and users. It also includes sorting, filtering, and pagination functionalities.
 
-This project requires environment variables to configure the database connections. You need to create the following .env files:
+## 🚀 **Hosted Version**
 
-1. .env.development
+The live version of the API is hosted here:  
+[nc-news-be](https://nc-news-be-quja.onrender.com/)
 
-This file is used for the development database. Create it in the root directory and add:
+## 📝 **Summary**
 
-        PGDATABASE=nc_news
+nc-news-be is a backend project that serves as the foundation for a forum-style application (like reddit) . It allows users to:
 
-2. .env.test
+- View articles and filter by topics.
+- View and post comments.
+- Update vote counts on articles.
+- Delete comments.
+- Retrieve user information.
 
-This file is used for the test database. Create it in the root directory and add:
+This RESTful API includes error handling for invalid routes, queries, and request formats.
 
-        PGDATABASE=nc_news_test
+## 💾 **Setup Instructions**
 
-# Database Setup
+### 1.🔗 **Clone the repository**
 
-Create both the development and test databases:
+git clone https://github.com/younesabd100/nc-news-be.git
+
+### 2.💡**Install dependencies**
+
+npm install
+
+### 3.🔋 **Set up environement Variables**
+
+Create 2 ".env" file in the root directory
+
+.env test :
+PGDATABASE=nc_news_test
+
+.env.developement :
+PGDATABASE=nc_news
+
+### 4.🌱**Seed the database**
 
 npm run setup-dbs
-
-Seed the database (for development only):
-
 npm run seed
 
-Running the Application
+### 5.🏃 **Run tests**
 
-# Start the development server:
+npm test
 
-npm start
+## 🧑‍🏫 **Minium Requirement**
 
-Run the tests:
-
-npm run test-seed
-npm run seed-dev
+Node.js: v18.0.0 or higher
+Postgres: v14.0.0 or higher
