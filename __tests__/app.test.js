@@ -439,3 +439,77 @@ describe("GET /api/users", () => {
       });
   });
 });
+describe("GET /api/users/:username", () => {
+  test("200: Responds with a user object, and should have the right property", () => {
+    return request(app)
+      .get("/api/users/rogersop")
+      .expect(200)
+      .then(({ body }) => {
+        const { user } = body;
+        expect(user).toMatchObject({
+          username: "rogersop",
+          name: "paul",
+          avatar_url:
+            "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4",
+        });
+      });
+  });
+  test("404: Responds with not found when passing an unidentified username", () => {
+    return request(app)
+      .get("/api/users/younes")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("User not found");
+      });
+  });
+});
+describe("PATCH /api/comments/:comment_id", () => {
+  test("200: Responds with an updated vote in comments by comment_id", () => {
+    const newVote = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/comments/2")
+      .send(newVote)
+      .expect(200)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment).toMatchObject({
+          comment_id: 2,
+          body: "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+          votes: 15,
+          author: "butter_bridge",
+          created_at: expect.any(String),
+        });
+      });
+  });
+
+  test("400: Responds with an error if a field is missing", () => {
+    const newVote = {};
+    return request(app)
+      .patch("/api/comments/2")
+      .send(newVote)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Missing info");
+      });
+  });
+  test("400: Responds with an error when correct field but incorrect value", () => {
+    const newVote = { inc_votes: "word" };
+    return request(app)
+      .patch("/api/comments/2")
+      .send(newVote)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test("400: Responds with an error when correct field but incorrect comment_id", () => {
+    const newVote = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/comments/999")
+      .send(newVote)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("comment_id not found");
+      });
+  });
+});

@@ -148,3 +148,36 @@ exports.selectUsers = () => {
     return rows;
   });
 };
+
+exports.selectUsersById = (username) => {
+  return db
+    .query(`SELECT * FROM users WHERE username = $1 `, [username])
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "User not found",
+        });
+      }
+      return rows[0];
+    });
+};
+exports.updateCommentByCommentId = (comment_id, inc_votes) => {
+  if (!inc_votes) {
+    return Promise.reject({ status: 400, msg: "Missing info" });
+  }
+  return db
+    .query(
+      `UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING * `,
+      [inc_votes, comment_id]
+    )
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({
+          status: 400,
+          msg: "comment_id not found",
+        });
+      }
+      return rows[0];
+    });
+};

@@ -13,6 +13,8 @@ const {
   updateArticleByArticleId,
   removeCommentByCommentId,
   selectUsers,
+  selectUsersById,
+  updateCommentByCommentId,
 } = require("../model/model.enpoint.js");
 
 exports.getApi = (req, res) => {
@@ -110,6 +112,27 @@ exports.getUsers = (req, res, next) => {
   return selectUsers()
     .then((user) => {
       res.status(200).send({ user });
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
+exports.getUsersById = (req, res, next) => {
+  const { username } = req.params;
+  return selectUsersById(username)
+    .then((user) => {
+      res.status(200).send({ user });
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
+exports.patchCommentByCommentId = (req, res, next) => {
+  const { comment_id } = req.params;
+  const { inc_votes } = req.body;
+  updateCommentByCommentId(comment_id, inc_votes)
+    .then((comment) => {
+      res.status(200).send({ comment });
     })
     .catch((error) => {
       next(error);
