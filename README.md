@@ -1,6 +1,6 @@
 # **nc-news-be API**
 
-This is a RESTful API built with Node.js and Express that serves data from a PostgreSQL database. The API allows users to retrieve, create, update, and delete articles, comments, topics, and users. It also includes sorting, filtering, and pagination functionalities.
+This is a RESTful API built with Node.js and Express that serves data from a PostgreSQL database. The API allows users to retrieve, create, update, and delete articles, comments, topics, and users. It also includes sorting and filtering, and functionalities.
 
 ## 🚀 **Hosted Version**
 
