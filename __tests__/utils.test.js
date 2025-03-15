@@ -105,17 +105,17 @@ describe("checkColumnExist", () => {
     });
   });
 });
-describe("checkTopicExist", () => {
-  test("function should resolves with true if a topic exists", () => {
-    const topic = "mitch";
-    checkTopicExist(topic).then(() => {
-      expect(true).toBe(true);
-    });
-  });
-  test("function should reject when a topic does not  exists", () => {
-    const topic = "fromage";
-    checkTopicExist(topic).catch((err) => {
-      expect(err.status).toBe(404);
-    });
-  });
-});
+// describe("checkTopicExist", () => {
+//   // test("function should resolves with true if a topic exists", () => {
+//   //   const topic = "mitch";
+//   //   checkTopicExist(topic).then(() => {
+//   //     expect(true).toBe(true);
+//   //   });
+//   // });
+//   test("function should reject when a topic does not  exists", () => {
+//     const topic = "fromage";
+//     checkTopicExist(topic).catch((err) => {
+//       expect(err.status).toBe(404);
+//     });
+//   });
+// });

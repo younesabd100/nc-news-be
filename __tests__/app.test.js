@@ -6,7 +6,7 @@ const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data");
 require("jest-sorted");
 
-beforeEach(() => {
+beforeAll(() => {
   return seed(data);
 });
 

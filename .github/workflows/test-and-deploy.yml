@@ -25,15 +25,15 @@ jobs:
       - name: Use PostgreSQL
         uses: harmon758/postgresql-action@v1
         with:
-          postgresql db: 'nc_news_test'
-          postgresql user: 'test_user'
-          postgresql password: 'test_password'
+          postgresql db: "nc_news_test"
+          postgresql user: "test_user"
+          postgresql password: "test_password"
 
       - name: Install dependencies
         run: npm ci
 
       - name: Run tests
-        run: PGDATABASE=nc_news_test PGUSER=test_user PGPASSWORD=test_password npm test
+        run: PGDATABASE=nc_news_test PGUSER=test_user PGPASSWORD=test_password npm test __tests__/
 
   deploy:
     name: Deploy
@@ -43,4 +43,3 @@ jobs:
     steps:
       - name: Deploy to Render
         run: curl ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
-
