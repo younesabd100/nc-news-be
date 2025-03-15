@@ -12,6 +12,9 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    env:
+      PGDATABASE: ${{ secrets.PGDATABASE }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
     steps:
       - name: Checkout Repo
